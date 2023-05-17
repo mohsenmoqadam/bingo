@@ -1,0 +1,4 @@
+## Name of the node
+-name bingo-stage@bingo-stage-ip
+## Cookie for distributed erlang
+-setcookie bingo-cookie

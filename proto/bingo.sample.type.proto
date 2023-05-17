@@ -1,0 +1,5 @@
+// +> category = REPLY
+package bingo.sample.type;
+// *> Code = 101
+message  Type {
+}

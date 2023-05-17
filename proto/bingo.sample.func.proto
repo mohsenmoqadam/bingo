@@ -1,0 +1,6 @@
+// +> category = REQUEST
+package bingo.sample.func;
+import "bingo.sample.type.proto";
+// *> Code = 151
+message Call {
+}
