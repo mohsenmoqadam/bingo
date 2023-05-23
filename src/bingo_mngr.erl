@@ -157,12 +157,15 @@ add(CN, Node, Worker) ->
 		    maps:fold(fun(_K, W, {W, NWC, NWP}) ->
 				      {W, NWC, NWP};
 				 (_K, V, {W, NWC, NWP}) ->
-				      {W, NWC + 1, NWP#{NWC + 1 => V}}
+				      {W, NWC + 1, NWP#{NWC + 1 => V}}					  
 			      end
 			     , {Worker, 0, #{}}
 			     , NodeWorkerPids0),
 		Index = NodeWorkerCnt + 1,
-		Nodes0#{Node => {Index, NodeWorkerPids#{Index => Worker}}}
+		Nodes0#{Node => { Index
+				, NodeWorkerPids#{Index => Worker}
+				}
+		       }
 	end,
     ok = bingo_conf:set(CN, NewNodes),
     ok.
@@ -197,8 +200,15 @@ get(CN, Node) ->
 	{error, undefined} ->
 	    case bingo_cluster:make_node_conn(Node) of
 		{ok, {WorkerCnt, WorkerPids}} ->
-		    ok = bingo_conf:set(?NODES, #{Node => {WorkerCnt, WorkerPids}}),
-		    Worker = maps:get(rand:uniform(WorkerCnt), WorkerPids),
+		    ok = bingo_conf:set( ?NODES
+				       , #{Node => { WorkerCnt
+						   , WorkerPids
+						   }
+					  }
+				       ),
+		    Worker = maps:get( rand:uniform(WorkerCnt)
+				     , WorkerPids
+				     ),
 		    {ok, Worker};
 		Else ->
 		    Else
@@ -208,14 +218,24 @@ get(CN, Node) ->
 		{0, _} ->
 		    case bingo_cluster:make_node_conn(Node) of
 			{ok, {WorkerCnt, WorkerPids}} ->
-			    ok = bingo_conf:set(CN, Nodes#{Node => {WorkerCnt, WorkerPids}}),
-			    Worker = maps:get(rand:uniform(WorkerCnt), WorkerPids),
+			    NewNodes = Nodes#{Node => { WorkerCnt
+						     , WorkerPids
+						     }
+					    },
+			    ok = bingo_conf:set( CN
+					       , NewNodes
+					       ),
+			    Worker = maps:get( rand:uniform(WorkerCnt)
+					     , WorkerPids
+					     ),
 			    {ok, Worker};
 			Else ->
 			    Else
 		    end;
 		{WorkerCnt, WorkerPids} ->
-		    Worker = maps:get(rand:uniform(WorkerCnt), WorkerPids),
+		    Worker = maps:get( rand:uniform(WorkerCnt)
+				     , WorkerPids
+				     ),
 		    {ok, Worker}
 	    end
     end.
@@ -231,5 +251,4 @@ show_all(CN, Node) ->
      		{WorkerCnt, WorkerPids} ->
 		    {ok, WorkerCnt, WorkerPids}
      	    end
-    end.
- 
+    end. 

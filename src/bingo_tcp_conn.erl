@@ -112,12 +112,12 @@ handle_info( {'EXIT', FromPid, _Reason}
 		   end
 		 , {FromPid, #{}}, OldWorkers),
     NewState = State#state{workers = {Workers, NewWorkers}},
-    {noreply, NewState};
-%%%=== Stop the TCP connection holder =================================
+    {noreply, NewState}; 
+%%%=== Stop the TCP connection holder ================================
 handle_info( {tcp_error, Socket, _Reason}
 	   , #state{socket = Socket} = Conn ) ->
     {stop, normal, Conn};
-%%%=== Stop the TCP connection holder =================================
+%%%=== Stop the TCP connection holder ================================
 handle_info( {tcp_closed, Socket}
 	   , #state{socket = Socket} = Conn ) ->
     {stop, normal, Conn};

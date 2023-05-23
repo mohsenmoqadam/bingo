@@ -188,8 +188,8 @@ cast(_, _, _, _, _) -> {error, invalid_params}.
 %%% `reply`, `waiting`, or `not_available`. 
 %%% If one node is not available in the cluster, 
 %%% its state is `not_available`. 
-%%% If one node is available, but does not deliver its reply within the 
-%%% timeout period, its state is `waiting`. Otherwise, 
+%%% If one node is available, but does not deliver its reply within 
+%%% the timeout period, its state is `waiting`. Otherwise, 
 %%% the state contains the reply.
 
 %%% Run `apply(erlang, F, [])` on target | remote nodes
@@ -218,7 +218,10 @@ multi_call(_, _, _) -> {error, invalid_params}.
 
 %%% Run `apply(M, F, [])` on target | remote nodes
 %%% and waits for T milliseconds to gather replies. 
--spec multi_call(list(node()), atom(), atom(), integer() | list()) ->
+-spec multi_call( list(node())
+		, atom()
+		, atom()
+		, integer() | list() ) ->
 	  {ok, map()} | {error, invalid_params} | timeout.
 multi_call(Nodes, M, F, T) when is_list(Nodes),
 				is_atom(M),
@@ -238,14 +241,16 @@ multi_call(_, _, _, _) -> {error, invalid_params}.
 %%% and waits for T milliseconds to gather replies. 
 -spec multi_call(list(node()), atom(), atom(), list(), integer()) -> 
 	  {ok, map()} | {error, invalid_params} | timeout.
-multi_call(Nodes, M, F, A, T) when is_list(Nodes),
-				   is_atom(M),
-				   is_atom(F),
-				   is_list(A), 
-				   (is_integer(T) orelse T =:= infinity) ->
+multi_call(Nodes, M, F, A, T) when is_list(Nodes), is_atom(M),
+				   is_atom(F), is_list(A), 
+				   ( is_integer(T) orelse 
+				     T =:= infinity ) ->
     case bingo_mngr:get_mc_worker() of
 	{ok, Worker} ->
-	    gen_server:call(Worker, {multi_call, Nodes, {M, F, A}}, T);
+	    gen_server:call( Worker
+			   , {multi_call, Nodes, {M, F, A}}
+			   , T
+			   );
 	Else ->
 	    Else
     end;
@@ -305,14 +310,16 @@ multi_cast(_, _, _, _) -> {error, invalid_params}.
 %%% and waits for T milliseconds to gather node states.
 -spec multi_cast(list(node()), atom(), atom(), list(), integer()) -> 
 	  {ok, map()} | {error, invalid_params} | timeout.
-multi_cast(Nodes, M, F, A, T) when is_list(Nodes),
-				   is_atom(M),
-				   is_atom(F),
-				   is_list(A), 
-				   (is_integer(T) orelse T =:= infinity) ->
+multi_cast(Nodes, M, F, A, T) when is_list(Nodes), is_atom(M),
+				   is_atom(F), is_list(A), 
+				   ( is_integer(T) orelse 
+				     T =:= infinity ) ->
     case bingo_mngr:get_mc_worker() of
 	{ok, Worker} ->
-	    gen_server:call(Worker, {multi_cast, Nodes, {M, F, A}}, T);
+	    gen_server:call( Worker
+			   , {multi_cast, Nodes, {M, F, A}}
+			   , T
+			   );
 	Else ->
 	    Else
     end;
@@ -332,10 +339,14 @@ load_loop(_Type, _Node, 0) -> ?LOG_DEBUG("~p: Stop", [self()]);
 load_loop(Type, Node, Count) when is_atom(Node) ->
     MaxBytes = 100000*8,
     MaxDummyNum = 1000000,
-    RandomMessage = <<(rand:uniform(MaxDummyNum)):(rand:uniform(MaxBytes))>>,
+    RandomMessage = << (rand:uniform(MaxDummyNum)):
+		       (rand:uniform(MaxBytes) )>>,
     case Type of
 	call ->
-	    RandomMessage = bingo:call(Node, bingo, echo, [RandomMessage]);
+	    RandomMessage = bingo:call( Node
+				      , bingo
+				      , echo
+				      , [RandomMessage] );
 	cast ->
 	    ok = bingo:cast(Node, bingo, echo, [RandomMessage])
     end,
@@ -343,7 +354,8 @@ load_loop(Type, Node, Count) when is_atom(Node) ->
 load_loop(Type, Nodes, Count) when is_list(Nodes) ->
     MaxBytes = 100000*8,
     MaxDummyNum = 1000000,
-    RandomMessage = <<(rand:uniform(MaxDummyNum)):(rand:uniform(MaxBytes))>>,
+    RandomMessage = << (rand:uniform(MaxDummyNum)):
+		       (rand:uniform(MaxBytes)) >>,
     case Type of
 	multi_call ->
 	    bingo:multi_call(Nodes, bingo, echo, [RandomMessage]);

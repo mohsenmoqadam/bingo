@@ -39,37 +39,37 @@ init([Node, ConnPid]) ->
     {ok, #state{node = Node, conn_pid = ConnPid}}.
 
 %%%=== handle_call callback
-%%%=== Send PING to target node / We are source node ================== 
+%%%=== Send PING to target node / We are source node ================= 
 handle_call( {ping, _Node} = Ping
 	   , From
 	   , #state{conn_pid = ConnPid} = State ) ->
     send(self(), ConnPid, {From, Ping}),
     {noreply, State};
-%%%=== Send MULTI-PING to target node / We are source node ================== 
+%%%=== Send MULTI-PING to target node / We are source node ===========
 handle_call( {multi_ping, From, Node}
 	   , _
 	   , #state{conn_pid = ConnPid} = State ) ->
     send(self(), ConnPid, {From, {multi_ping, Node}}),
     {reply, ok, State};
-%%%=== Send CALL to target node / We are source node ==================
+%%%=== Send CALL to target node / We are source node =================
 handle_call( {call, _MFA} = Call
 	   , From
 	   , #state{conn_pid = ConnPid} = State ) ->
     send(self(), ConnPid, {From, Call}),
     {noreply, State};
-%%%=== Send MULTI-CALL to target node / We are source node ============
+%%%=== Send MULTI-CALL to target node / We are source node ===========
 handle_call( {multi_call, From, MFA}
 	   , _
 	   , #state{conn_pid = ConnPid} = State ) ->
     send(self(), ConnPid, {From, {multi_call, MFA}}),
     {reply, ok, State};
-%%%=== Send CAST to target node / We are source node ==================
+%%%=== Send CAST to target node / We are source node =================
 handle_call( {cast, _MFA} = Cast
 	   , From
 	   , #state{conn_pid = ConnPid} = State ) ->
     send(self(), ConnPid, {From, Cast}),
     {reply, ok, State};
-%%%=== Send MULTI-CAST to target node / We are source node ============
+%%%=== Send MULTI-CAST to target node / We are source node ===========
 handle_call( {multi_cast, From, MFA}
 	   , _
 	   , #state{conn_pid = ConnPid} = State ) ->
@@ -106,7 +106,8 @@ handle_cast({From, {pong, _} = Reply}, #state{} = State) ->
     gen_server:reply(From, Reply),
     {noreply, State};
 %%%=== Receive MULTI-PONG from target node / We are source node ======
-handle_cast({{FromPid, FromRef}, {multi_pong, Node}}, #state{} = State) ->
+handle_cast( {{FromPid, FromRef}, {multi_pong, Node}}
+	   , #state{} = State ) ->
     gen_server:cast(FromPid, {pong, FromRef, Node}),
     {noreply, State};
 %%%=== Receive PANG from Target Node / We are source node ============
@@ -134,10 +135,14 @@ handle_cast( {From, {call, {M, F, A}}}
 handle_cast( {From, {multi_call, {M, F, A}}}
 	   , #state{node = Node, conn_pid = ConnPid} = State ) ->
     try
-	send(ConnPid, {From, {multi_call_reply, node(), apply(M, F, A)}})
+	send( ConnPid
+	    , {From, {multi_call_reply, node(), apply(M, F, A)}}
+	    )
     catch 
 	Class:Pattern -> 
-	    send(ConnPid, {From, {multi_call_reply, node(), {Class, Pattern}}}),
+	    send( ConnPid
+		, {From, {multi_call_reply, node(), {Class, Pattern}}}
+		),
             ?LOG_ERROR( "[BINGO] Exceptions,"
 			" Class: ~p, Pattern: ~p @ {~p <---> ~p}"
                       , [Class, Pattern, Node, ConnPid] )
@@ -148,8 +153,11 @@ handle_cast({From, {call_reply, Reply}}, #state{} = State) ->
     gen_server:reply(From, Reply),
     {noreply, State};
 %%%=== Receive MULTI-CALL-REPLY from target node / We are source node 
-handle_cast({{FromPid, FromRef}, {multi_call_reply, Node, Reply}}, #state{} = State) ->
-    gen_server:cast(FromPid, {multi_call_reply, FromRef, Node, Reply}),
+handle_cast( {{FromPid, FromRef}, {multi_call_reply, Node, Reply}}
+	   , #state{} = State ) ->
+    gen_server:cast( FromPid
+		   , {multi_call_reply, FromRef, Node, Reply}
+		   ),
     {noreply, State};
 %%%=== Receive CAST from source node / We are target node ============
 handle_cast( {_From, {cast, {M, F, A}}}
@@ -167,7 +175,6 @@ handle_cast( {_From, {cast, {M, F, A}}}
 handle_cast( {_From, {multi_cast, {M, F, A}}}
 	   , #state{node = Node, conn_pid = ConnPid} = State ) ->
     try
-	?LOG_ERROR("&&&&&x", []),
 	apply(M, F, A)
     catch 
 	Class:Pattern -> 
