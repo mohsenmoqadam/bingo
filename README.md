@@ -35,7 +35,7 @@ Bingo
 =====
 Bingo helps us to redirect our application traffic between nodes from general and common channel to a specific channel and let us control the capacity and behaviour of this channel based on our application requirements. We can use Bingo's channel to send our `cast` and `call` request from the local node to the remote node or simultaneously send `cast` and `call` to more than one remote node, Bingo provides `multi_cast` and `multi_call` API for these purposes.
 
-When we require one `call`, `cast`, `multi_call` or `multi_cast` to target node, Bingo create some TCP connection to that node and then sends our request to target nodde(s) and (if require) it gathers the results and return the replies. Send request and return reply is a feature like RPC, but they have small differences in details. Channel is the abstract concept that represents direct access between two Erlang nodes. Each channel may have one or more TCP connections and other settings that we can set its properties through Bingo configuration options.:
+When we require one `call`, `cast`, `multi_call` or `multi_cast` to target node, Bingo create some TCP connection to that node and then sends our request to target nodde(s) and (if require) it gathers the results and return the replies. Send request and return reply is a feature like RPC, but they have small differences in details. Channel is the abstract concept that represents direct access between two Erlang nodes. Each channel may have one or more TCP connections and other settings that we can set its properties through Bingo configuration options:
 
 ``` erlang
 {conn, #{ ip => "127.0.0.1"
