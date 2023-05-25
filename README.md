@@ -48,16 +48,23 @@ When we require one `call`, `cast`, `multi_call` or `multi_cast` to target node,
 ```
 
 `ip` and `port`: Tells Bingo listening on which `IP:PORT` for creating a new connection. 
+
 `acceptors`: How many `TCP ACCEPTOR` must exist on each channel for accepting new `TCP CONNECTIONS`. Each acceptor is one Erlang Actor. 
+
 `conns`: How many `TCP CONNECTION` must exist on each channel. Each `TCP CONNECTION` is one Erlang Actor that holds a `SOCKET` for sending and receiving requests. 
-`workers`: How many workers must exist on each channel. `worker` gets a request from one `conn` and process it and prepare the result, then send the result as a reply to `conn` for sending to the requested node.
+
+`workers`: How many workers must exist on each channel. `worker` gets a request from one `conn` and process it and prepare the result, then send the result as a reply to 
+
+`conn` for sending to the requested node.
 
 Here arise two main question: 
 #### 1. Why do we have workers and why we must not process the incoming request with actors that hold a socket?
-If we process each incoming request with `conn`, the `conn` actor during process the received request is blocked and other received requests are queued in `conn`'s inbox, and this approach increases response time for each request. Bingo use a scalable approach and trying to decrease response time. When one `conn` receive a request, first it selects a worker randomly and send that request to that worker. After selected worker process one request, it sends the result to `conn` (because `conn` hold the socket). `conn` convey the result to requested node as reply.
+If we process each incoming request with `conn`, the `conn` actor during process the received request is blocked and other received requests are queued in `conn`'s inbox, and this approach increases response time for each request. 
+Bingo use a scalable approach and trying to decrease response time. When one `conn` receive a request, first it selects a worker randomly and send that request to that worker. After selected worker process one request, it sends the result to `conn` (because `conn` hold the socket). `conn` convey the result to requested node as reply.
 
 #### 2. How Bingo does `multi_call` and `multi_cast` requests?
-For responding to this question, first we must be familiar with `multi_cast` and `multi_call` anatomy! With `multi_x` API Bingo, send specific request to a list of nodes in cluster and gather results and then return replies. Bingo hire a set of worker and named them: `mc.workers`. When Bingo receive `multi_call` or `multi_cast` request, it selects on `mc_worker` and send that request to selected worker. This worker sends `call` or `cast` requests to all requested remote nodes simultaneously and waits for gathering results and prepare reply and return it.
+For responding to this question, first we must be familiar with `multi_cast` and `multi_call` anatomy! With `multi_x` API Bingo, send specific request to a list of nodes in cluster and gather results and then return replies. 
+Bingo hire a set of worker and named them: `mc.workers`. When Bingo receive `multi_call` or `multi_cast` request, it selects on `mc_worker` and send that request to selected worker. This worker sends `call` or `cast` requests to all requested remote nodes simultaneously and waits for gathering results and prepare reply and return it.
 Bingo provide below options to configure `multicast` and `multi call` behaviours:
 
 ``` erlang
