@@ -81,17 +81,17 @@ Configuration Options
 Below snippet shows all configuration options and if we want to use Bingo in our application these options must set carefully based on application requirements.
 ``` erlang
 {bingo, [ {conn, #{ ip => "127.0.0.1"
-                   , port => {25000, 50000}
-                   , acceptors => 2
-                   , conns => 2
-                   , workers => 4
-                   }
-           }
-         , {'cluster.erpc.timeout', 2000}
-         , {'mc.timeout', 2000}
-         , {'mc.workers', 4}
-         ]
- }
+                  , port => {25000, 50000}
+                  , acceptors => 2
+                  , conns => 2
+                  , workers => 4
+                  }
+          }
+        , {'cluster.erpc.timeout', 2000}
+        , {'mc.timeout', 2000}
+        , {'mc.workers', 4}
+        ]
+}
 ```
 
 ‌Be aware...
