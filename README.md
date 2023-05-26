@@ -94,6 +94,59 @@ Below snippet shows all configuration options and if we want to use Bingo in our
 }
 ```
 
-‌Be aware...
-===========
-This documentary is not complete and other parts of it will be added in the future.
+‌API
+=====
+`echo/0`: Returns "echo/0", Only for tests.</br> 
+`echo/1`: Gets one input (any term) and returns it, Only for tests.</br> 
+`ping/1`: Gets the remote node name as input and send `ping` to that node and return the result.</br>
+`multi_ping/1`: Gets a list of remote nodes' names and sends `ping` to those nodes and returns results.</br>
+`call/2`: Applies `erlang:F/0` on the target node and returns results.</br>
+`call/3`: Applies `erlang:F/0` with timeout or `M:F/0` on the target node and returns results.</br>
+`call/4`: Applies `M:F/0` with timeout or `M:F/A` on the target node and returns results.</br>
+`call/5`: Applies `M:F/A` with timeout on the target node and returns results.</br>
+`multi_call/2`: Applies `erlang:F/0` on the target nodes and gathers and returns results.</br>
+`multi_call/3`: Applies `erlang:F/0` with timeout or `M:F/0` on the target nodes and gathers and returns results.</br>
+`multi_call/4`: Applies `M:F/0` with timeout or `M:F/A` on the target nodes and gathers and returns results.</br>
+`multi_call/5`: Applies `M:F/A` with timeout on the target nodes and gathers and returns results.</br>
+`cast/2`: Applies `erlang:F/0` on the target node and returns `ok` if target node is available.</br>
+`cast/3`: Applies `erlang:F/0` with timeout or `M:F/0` on the target node and returns `ok` if target node is available.</br>
+`cast/4`: Applies `M:F/0` with timeout or `M:F/A` on the target node and returns `ok` if target node is available.</br>
+`cast/5`: Applies `M:F/A` with timeout on the target node and returns `ok` if target node is available.</br>
+`multi_cast/2`: Applies `erlang:F/0` on the target nodes and returns nodes' availability state.</br>
+`multi_cast/3`: Applies `erlang:F/0` with timeout or `M:F/0` on the target nodes and returns nodes' availability state.</br>
+`multi_cast/4`: Applies `M:F/0` with timeout or `M:F/A` on the target nodes and returns nodes' availability state.</br>
+`multi_cast/5`: Applies `M:F/A` with timeout on the target nodes and returns nodes' availability state.</br>
+`load/4`: For performance testing.</br>
+Each of the above APIs has complete comments and specs for other detail. If you require more documentation, please visit the [bingo.erl](https://github.com/mohsenmoqadam/bingo/blob/main/src/bingo.erl) file.
+
+Usage
+=====
+Getting started with Bingo is easy. First, add the appropriate dependency line to your rebar.config:
+``` erlang
+{deps, [    
+    {gen_rpc, {git, "https://github.com/mohsenmoqadam/bingo.git", {branch, "main"}}}
+]}.
+```
+
+Dev/Test
+========
+The Bingo structure is based on [SEPC](https://github.com/mohsenmoqadam/SEPC), But you can clone this repository and then use the `make` command for different purposes. Be aware, you must be installed `Erlang/OTP >= 22` and `build essential` on the machine you want to run this repository..
+
+* Run test: 
+``` bash
+make test
+```
+The above command creates three nodes and runs all CTs.
+
+* Run development environment and console (REPL):
+``` bash
+make rel-dev && make console-dev
+```
+If you have changes in source codes, the above command compiles sources and runs a new node.
+
+* run new node
+``` bash
+make node name=new_node
+```
+If you require a new node, The above command creates that node. Be aware, you must specify the name of the desired node.
+
