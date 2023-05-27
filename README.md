@@ -57,12 +57,12 @@ When we require one `call`, `cast`, `multi_call` or `multi_cast` to target node,
 
 Here arise two main question: 
 #### 1. Why do we have workers and why we must not process the incoming request with actors that hold a socket?
-If we process each incoming request with `conn`, the `conn` actor during process the received request is blocked and other received requests are queued in `conn`'s inbox, and this approach increases response time for each request. 
+If we process each incoming request with `conn`, during process the received request the `conn` actor is blocked and other received requests are queued in `conn`'s inbox, and this approach increases response time for each request. 
 Bingo use a scalable approach and trying to decrease response time. When one `conn` receives a request, first it selects a worker randomly and sends that request to that worker. After a selected worker processes one request, it sends the result to `conn` (because `conn` holds the socket). `conn` transfers the result to requested node as reply.
 
 #### 2. How Bingo does `multi_call` and `multi_cast` requests?
 For responding to this question, first we must be familiar with `multi_cast` and `multi_call` anatomy! With `multi_x` API Bingo, sends specific request to a list of nodes in cluster and gathers results and then returns replies. 
-Bingo hires a set of worker and named them: `mc.workers`. When Bingo receives `multi_call` or `multi_cast` request, it selects on `mc_worker` and sends that request to a selected worker. This worker sends `call` or `cast` requests to all requested remote nodes concurrently and waits for gathering results and prepares reply and returns it.
+Bingo hires a set of worker and named them: `mc.workers`. When Bingo receives `multi_call` or `multi_cast` request, it selects one `mc_worker` and sends that request to a selected worker. This worker sends `call` or `cast` requests to all requested remote nodes concurrently and waits for gathering results and prepares reply and returns it.
 Bingo provides the below options to configure `multicast` and `multi call` behaviours:
 
 ``` erlang
