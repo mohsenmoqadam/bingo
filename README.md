@@ -122,7 +122,7 @@ Usage
 Getting started with Bingo is easy. First, add the appropriate dependency line to your rebar.config:
 ``` erlang
 {deps, [    
-    {gen_rpc, {git, "https://github.com/mohsenmoqadam/bingo.git", {branch, "main"}}}
+    {bingo, {git, "https://github.com/mohsenmoqadam/bingo.git", {branch, "main"}}}
 ]}.
 ```
 
