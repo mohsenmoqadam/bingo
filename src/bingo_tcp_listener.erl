@@ -32,17 +32,24 @@ start_link() ->
 %%% Callback Functions
 %%%===================================================================
 init([]) ->
-    {ok, #{ ip := Ip0
-	  , port := {PortStart, PortEnd}
-	  , acceptors := Acceptors } = Conn0} = bingo_conf:get(conn),
+    Conn = case bingo_conf:get(conn) of
+	       {ok, #{port := {PortStart, PortEnd}} = Conn0} ->
+		   RP = rand:uniform(PortEnd - PortStart)+ PortStart,
+		   Conn0#{port => RP};
+	       {ok, Conn0} ->
+		   Conn0
+	   end,
+    #{ ip := Ip0
+     , port := Port
+     , acceptors := Acceptors 
+     } = Conn,
     {ok, Ip} = inet:parse_ipv4_address(Ip0),
-    Port = rand:uniform(PortEnd - PortStart) + PortStart,
     {ok, Socket} = 
 	gen_tcp:listen( Port
 		      , [{ip, Ip}] ++ ?BINGO_TCP_DEFAULT_OPTS
 		      ),
     {ok, _} = bingo_tcp_acceptor:start_link(Socket, Acceptors),
-    ok = bingo_conf:set(conn, Conn0#{port => Port}),
+    ok = bingo_conf:set(conn, Conn),
     {ok, #state{socket = Socket}}.
 
 handle_call(_Request, _From, State) ->
