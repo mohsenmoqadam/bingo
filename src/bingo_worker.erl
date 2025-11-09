@@ -73,7 +73,7 @@ handle_call( {cast, _MFA} = Cast
 handle_call( {multi_cast, From, MFA}
 	   , _
 	   , #state{conn_pid = ConnPid} = State ) ->
-    send(self(), ConnPid, {From, multi_cast, MFA}),
+    send(ConnPid, {From, {multi_cast, MFA}}),
     {reply, ok, State};
 %%%=== Unknown Request ===============================================
 handle_call(_Request, _From, State) ->

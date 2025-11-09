@@ -72,7 +72,7 @@ call(_, _) -> {error, invalid_params}.
 	  {error, not_available}.
 call(Node, F, T) when is_atom(Node), 
 		      is_atom(F), 
-		      is_integer(T) ->
+		      (is_integer(T) orelse T =:= infinity) ->
     call(Node, erlang, F, [], T);
 %%% Run `apply(M, F, [])` on target | remote node
 %%% and waits forever to to get reply.
@@ -90,7 +90,7 @@ call(_, _, _) -> {error, invalid_params}.
 call(Node, M, F, T) when is_atom(Node),
 			 is_atom(M),
 			 is_atom(F),
-			 is_integer(T) ->
+			 (is_integer(T) orelse T =:= infinity) ->
     call(Node, M, F, [], T);
 %%% Run `apply(M, F, A)` on target | remote node
 %%% and waits forever to to get reply.
@@ -135,7 +135,7 @@ cast(_, _) -> {error, invalid_params}.
 	  {error, not_available}.
 cast(Node, F, T) when is_atom(Node), 
 		      is_atom(F), 
-		      is_integer(T) ->
+		      (is_integer(T) orelse T =:= infinity) ->
     cast(Node, erlang, F, [], T);
 %%% Run `apply(M, F, [])` on target | remote node
 %%% and waits forever to gather node state.
@@ -153,7 +153,7 @@ cast(_, _, _) -> {error, invalid_params}.
 cast(Node, M, F, T) when is_atom(Node),
 			 is_atom(M),
 			 is_atom(F),
-			 is_integer(T) ->
+			 (is_integer(T) orelse T =:= infinity) ->
     cast(Node, M, F, [], T);
 %%% Run `apply(M, F, A)` on target | remote node
 %%% and waits forever to gather node state.
@@ -206,7 +206,7 @@ multi_call(_, _) -> {error, invalid_params}.
 	  {ok, map()} | {error, invalid_params} | timeout.
 multi_call(Nodes, F, T) when is_list(Nodes), 
 			     is_atom(F), 
-			     is_integer(T) ->
+			     (is_integer(T) orelse T =:= infinity) ->
     multi_call(Nodes, erlang, F, [], T);
 %%% Run `apply(M, F, [])` on target | remote nodes
 %%% and waits forever to gather replies. 
@@ -226,7 +226,7 @@ multi_call(_, _, _) -> {error, invalid_params}.
 multi_call(Nodes, M, F, T) when is_list(Nodes),
 				is_atom(M),
 				is_atom(F),
-				is_integer(T) ->
+				(is_integer(T) orelse T =:= infinity) ->
     multi_call(Nodes, M, F, [], T);
 %%% Run `apply(M, F, A)` on target | remote nodes
 %%% and waits forever to gather replies. 
@@ -278,7 +278,7 @@ multi_cast(_, _) -> {error, invalid_params}.
 	  {ok, map()} | {error, invalid_params} | timeout.
 multi_cast(Nodes, F, T) when is_list(Nodes), 
 			     is_atom(F), 
-			     is_integer(T) ->
+			     (is_integer(T) orelse T =:= infinity) ->
     multi_cast(Nodes, erlang, F, [], T);
 %%% Run `apply(M, F, [])` on target | remote nodes
 %%% and waits forever to gather node states.
@@ -295,7 +295,7 @@ multi_cast(_, _, _) -> {error, invalid_params}.
 multi_cast(Nodes, M, F, T) when is_list(Nodes),
 				is_atom(M),
 				is_atom(F),
-				is_integer(T) ->
+				(is_integer(T) orelse T =:= infinity) ->
     multi_cast(Nodes, M, F, [], T);
 %%% Run `apply(M, F, A)` on target | remote nodes
 %%% and waits forever to gather node states.
