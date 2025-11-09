@@ -34,7 +34,13 @@ start_link() ->
 init([]) ->
     Conn = case bingo_conf:get(conn) of
 	       {ok, #{port := {PortStart, PortEnd}} = Conn0} ->
-		   RP = rand:uniform(PortEnd - PortStart)+ PortStart,
+		   RangeSize = PortEnd - PortStart + 1,
+		   RP = case RangeSize of
+			    Size when Size > 0 ->
+				PortStart + rand:uniform(Size) - 1;
+			    _ ->
+				PortStart
+			end,
 		   Conn0#{port => RP};
 	       {ok, Conn0} ->
 		   Conn0
